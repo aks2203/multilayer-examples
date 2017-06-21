@@ -34,13 +34,35 @@ def set_quiescent_init_condition(state, single_layer=False):
         state.q[2,:] = state.aux[h_hat_index[1],:] * state.problem_data['rho'][1]
         state.q[3,:] = np.zeros((state.grid.dimensions[0].num_cells))
 
+
+def set_eta_to_sea_level(state, eta, single_layer=False):
+    """Set a quiescent (stationary) initial condition using eta
+    
+    This assumes that you have already set the h hat values and the densities
+    and the bathymetry.
+
+    eta must be a list in both the single and double layer case.
+    """
+    b = state.aux[0]
+
+    if single_layer:
+        state.q[2,:] = np.zeros((state.grid.dimensions[0].num_cells))
+        state.q[3,:] = np.zeros((state.grid.dimensions[0].num_cells))
+        state.q[0,:] = eta[0] - b
+        state.q[1,:] = np.zeros((state.grid.dimensions[0].num_cells))
+
+    else:
+        state.q[2,:] = eta[1] - b
+        state.q[3,:] = np.zeros((state.grid.dimensions[0].num_cells))
+        state.q[0,:] = eta[0] - eta[1]
+        state.q[1,:] = np.zeros((state.grid.dimensions[0].num_cells))
     
 
 def set_wave_family_init_condition(state,wave_family,jump_location,epsilon):
     """Set initial condition of a jump in the specified wave family"""
     
     # Set stationary initial state, perturb off of that
-    set_quiescent_init_condition(state)
+    set_eta_to_sea_level(state, [0.0, -0.4])
     
     r = state.problem_data['r']
     rho = state.problem_data['rho']
@@ -66,13 +88,13 @@ def set_wave_family_init_condition(state,wave_family,jump_location,epsilon):
         if x < jump_location and wave_family >= 3:
             state.q[0,i] += rho[0] * epsilon
             state.q[1,i] += rho[0] * epsilon * eig_value
-            state.q[2,i] += rho[1] * epsilon * alpha
-            state.q[3,i] += rho[1] * epsilon * eig_value * alpha
+            # state.q[2,i] += rho[1] * epsilon * alpha
+            # state.q[3,i] += rho[1] * epsilon * eig_value * alpha
         elif x >= jump_location and wave_family < 3:
             state.q[0,i] += rho[0] * epsilon
             state.q[1,i] += rho[0] * epsilon * eig_value
-            state.q[2,i] += rho[1] * epsilon * alpha
-            state.q[3,i] += rho[1] * epsilon * eig_value * alpha
+            # state.q[2,i] += rho[1] * epsilon * alpha
+            # state.q[3,i] += rho[1] * epsilon * eig_value * alpha
 
 
 def set_gaussian_init_condition(state,A,location,sigma,internal_layer=True):
