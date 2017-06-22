@@ -102,19 +102,11 @@ def setplot(plotdata,wave_family,rho,dry_tolerance):
     xlimits = [-1.0,1.0]
     xlimits_zoomed = [0.45,0.55]
     ylimits_momentum = [-0.004,0.004]
-    
-    # External wave
-    if wave_family == 4:
-        ylimits_velocities = [-0.8,0.8]
-        ylimits_depth = [-1.0,1.0]
-        ylimits_depth_zoomed = [-1.0,0.4]
-        ylimits_velocities_zoomed = [-0.1,0.75]
-    # internal wave
-    elif wave_family == 3:
-        ylimits_velocities = [-0.15,0.15] 
-        ylimits_velocities_zoomed = ylimits_velocities
-        ylimits_depth = [-1.0,1.0]
-        ylimits_depth_zoomed = ylimits_depth
+    ylimits_velocities = [-0.8,0.8]
+    ylimits_depth = [-1.0,1.0]
+    ylimits_depth_zoomed = [-1.0,0.4]
+    ylimits_velocities_zoomed = [-0.1,0.75]
+
     
     # ========================================================================
     #  Depth and Momentum Plot
@@ -138,11 +130,11 @@ def setplot(plotdata,wave_family,rho,dry_tolerance):
         # Top Layer
         depth_axes.fill_between(x,eta_1(cd),eta_2(cd),color=plot.top_color)
         # Plot bathy
-        depth_axes.plot(x,bathy(cd),'k',linestyle=plot.bathy_linestyle)
+        depth_axes.plot(x,bathy(cd),'ok',linestyle=plot.bathy_linestyle)
         # Plot internal layer
-        depth_axes.plot(x,eta_2(cd),'k',linestyle=plot.internal_linestyle)
+        depth_axes.plot(x,eta_2(cd),'xk')#,linestyle=plot.internal_linestyle)
         # Plot surface
-        depth_axes.plot(x,eta_1(cd),'k',linestyle=plot.surface_linestyle)
+        depth_axes.plot(x,eta_1(cd),'+k')#,linestyle=plot.surface_linestyle)
         
         # Remove ticks from top plot
         num_ticks = len(depth_axes.xaxis.get_ticklocs())
@@ -186,7 +178,7 @@ def setplot(plotdata,wave_family,rho,dry_tolerance):
     #  Fill plot zoom
     # ========================================================================
     plotfigure = plotdata.new_plotfigure(name='Depth and Momentum Zoomed',figno=1)
-    plotfigure.show = True
+    plotfigure.show = False
 
     def twin_axes_zoomed(cd):
         fig = mpl.gcf()
@@ -252,7 +244,7 @@ def setplot(plotdata,wave_family,rho,dry_tolerance):
     #  Momentum
     # ========================================================================
     plotfigure = plotdata.new_plotfigure(name="momentum",figno=134)
-    plotfigure.show = True
+    plotfigure.show = False
     
     plotaxes = plotfigure.new_plotaxes()
     plotaxes.title = "Momentum"

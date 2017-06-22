@@ -48,13 +48,13 @@ def set_eta_to_sea_level(state, eta, single_layer=False):
     if single_layer:
         state.q[2,:] = np.zeros((state.grid.dimensions[0].num_cells))
         state.q[3,:] = np.zeros((state.grid.dimensions[0].num_cells))
-        state.q[0,:] = eta[0] - b
+        state.q[0,:] = np.max(eta[0] - b, 0)
         state.q[1,:] = np.zeros((state.grid.dimensions[0].num_cells))
 
     else:
-        state.q[2,:] = eta[1] - b
+        state.q[2,:] = np.where(eta[1] - b < 0.0, 0.0, eta[1] - b)
         state.q[3,:] = np.zeros((state.grid.dimensions[0].num_cells))
-        state.q[0,:] = eta[0] - eta[1]
+        state.q[0,:] = np.where(eta[0] - state.q[2,:] - b < 0.0, 0.0, eta[0] - state.q[2,:] - b) 
         state.q[1,:] = np.zeros((state.grid.dimensions[0].num_cells))
     
 
@@ -62,7 +62,7 @@ def set_wave_family_init_condition(state,wave_family,jump_location,epsilon):
     """Set initial condition of a jump in the specified wave family"""
     
     # Set stationary initial state, perturb off of that
-    set_eta_to_sea_level(state, [0.0, -0.4])
+    set_quiescent_init_condition(state)
     
     r = state.problem_data['r']
     rho = state.problem_data['rho']

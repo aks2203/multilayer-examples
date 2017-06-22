@@ -11,7 +11,7 @@ from clawpack.pyclaw.plot import plot
 
 import multilayer as ml
         
-def wave_family(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
+def hump(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     r"""docstring for oscillatory_wind"""
 
     # Construct output and plot directory paths
@@ -21,6 +21,9 @@ def wave_family(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     else:
         name = 'multilayer/wet_wave_%s' % wave_family
     outdir,plotdir,log_path = runclaw.create_output_paths(name,prefix,**kargs)
+    
+    outdir = '_output/'
+    plotdir = '_plots/'
     
     # Redirect loggers
     # This is not working for all cases, see comments in runclaw.py
@@ -93,29 +96,14 @@ def wave_family(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     solution.t = 0.0
     
     # Set aux arrays including bathymetry, wind field and linearized depths
-    if dry_state:
-        ml.aux.set_jump_bathymetry(solution.state, 0.5, [-1.0, -0.2])
-    else:
-        ml.aux.set_jump_bathymetry(solution.state, 0.5, [-1.0, -1.0])
     ml.aux.set_no_wind(solution.state)
     ml.aux.set_h_hat(solution.state, 0.5, [0.0, -0.2], [0.0, -0.2])
-    ml.aux.set_sloped_shelf_bathymetry(solution.state,-0.55,-0.4,-1.0,-0.2)
+    ml.aux.set_sloped_shelf_bathymetry(solution.state,-0.55,-0.4,-1.0,-0.4)
 
     
     # Set initial condition
     ml.qinit.set_eta_to_sea_level(solution.state, [0.0, -0.4])
-    if wave_family == 5:
-        ml.qinit.set_wave_family_init_condition(solution.state, wave_family, 
-                                                    -0.45, 0.04)
-        ml.qinit.set_wave_family_init_condition(solution.state,2, 
-                                                    -0.55, 0.04)
-
-    elif wave_family == 4:
-        # The perturbation must be less in this case otherwise the internal
-        # wave will crest the bathymetry jump
-        ml.qinit.set_wave_family_init_condition(solution.state, wave_family, 
-                                                    -0.55, 0.04)
-
+   
     
     # ================================
     # = Create simulation controller =
@@ -127,7 +115,7 @@ def wave_family(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     # Output parameters
     controller.output_style = 3
     controller.tfinal = 1
-    controller.num_output_times = 50
+    controller.num_output_times = 10
     controller.write_aux_init = True
     controller.outdir = outdir
     controller.write_aux = True
@@ -143,7 +131,7 @@ def wave_family(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     plot_kargs = {'wave_family':wave_family,
                   'rho':solution.state.problem_data['rho'],
                   'dry_tolerance':solution.state.problem_data['dry_tolerance']}
-    plot(setplot="./setplot_wave_family.py",outdir=outdir,plotdir=plotdir,
+    plot(setplot="./setplot_hump.py",outdir=outdir,plotdir=plotdir,
          htmlplot=kargs.get('htmlplot',False),iplot=kargs.get('iplot',False),
          file_format=controller.output_format,**plot_kargs)
 
@@ -159,12 +147,12 @@ if __name__ == "__main__":
         eig_methods = [2]
 
     # Display runs
-    resolution = 500
+    resolution = 5
     for family in [3]:
         for dry_state in [False]:
             for method in eig_methods:
                 print "Running family=%s dry=%s eigen=%s resolution=%s" % (family,dry_state,method,resolution)
-                wave_family(resolution,method,family,dry_state,iplot=False,htmlplot=True)
+                hump(resolution,method,family,dry_state,iplot=False,htmlplot=True)
 
     # Resolutions for tests
     # resolutions = [64,128,256,512,1024,5000]
