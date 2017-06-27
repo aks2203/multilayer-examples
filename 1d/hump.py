@@ -98,7 +98,8 @@ def hump(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     # Set aux arrays including bathymetry, wind field and linearized depths
     ml.aux.set_no_wind(solution.state)
     ml.aux.set_h_hat(solution.state, 0.5, [0.0, -0.2], [0.0, -0.2])
-    ml.aux.set_sloped_shelf_bathymetry(solution.state,-0.55,-0.4,-1.0,-0.4)
+    # ml.aux.set_sloped_shelf_bathymetry(solution.state,-0.55,-0.4,-1.0,-0.6)
+    ml.aux.set_jump_bathymetry(solution.state,0.5,[-1.0,-0.2])
 
     
     # Set initial condition
@@ -147,7 +148,7 @@ if __name__ == "__main__":
         eig_methods = [2]
 
     # Display runs
-    resolution = 5
+    resolution = 500
     for family in [3]:
         for dry_state in [False]:
             for method in eig_methods:
