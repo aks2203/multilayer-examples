@@ -17,7 +17,6 @@ kappa_index = 4
 def set_h_hat(state,jump_location,eta_left,eta_right):
     """Set the initial surfaces for Riemann solver use"""
     b = state.aux[bathy_index,:]
-
     for (i,x) in enumerate(state.grid.dimensions[0].centers):
         if x < jump_location:
             if eta_left[1] > b[i]:

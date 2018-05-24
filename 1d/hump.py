@@ -72,7 +72,7 @@ def hump(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     # ============================
     num_layers = 2
     
-    x = pyclaw.Dimension(-1.0, 1.0, num_cells)
+    x = pyclaw.Dimension(-1000.0, 4000.0, num_cells)
     domain = pyclaw.Domain([x])
     state = pyclaw.State(domain, 2 * num_layers, 3 + num_layers)
     state.aux[ml.aux.kappa_index,:] = 0.0
@@ -96,15 +96,15 @@ def hump(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     solution.t = 0.0
     
     # Set aux arrays including bathymetry, wind field and linearized depths
+    # ml.aux.set_jump_bathymetry(solution.state, 0.0, [-1.0, -1.0])
+    ml.aux.set_sloped_shelf_bathymetry(solution.state,0.0,2500,-3200.0,-200.0)
     ml.aux.set_no_wind(solution.state)
-    ml.aux.set_h_hat(solution.state, 0.5, [0.0, -0.2], [0.0, -0.2])
-    # ml.aux.set_sloped_shelf_bathymetry(solution.state,-0.55,-0.4,-1.0,-0.6)
-    ml.aux.set_jump_bathymetry(solution.state,0.5,[-1.0,-0.2])
-
+    ml.aux.set_h_hat(solution.state, 0.0, [0.0, -100.0], [0.0, -100.0])
     
     # Set initial condition
-    ml.qinit.set_eta_to_sea_level(solution.state, [0.0, -0.4])
-   
+    # ml.qinit.set_eta_to_sea_level(solution.state, [0.0, -100.])
+    ml.qinit.set_wave_family_init_condition(solution.state, wave_family, 
+                                                    -100., 0.03, 500)
     
     # ================================
     # = Create simulation controller =
@@ -114,9 +114,9 @@ def hump(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     controller.solver = solver
     
     # Output parameters
-    controller.output_style = 3
-    controller.tfinal = 1
-    controller.num_output_times = 10
+    controller.output_style = 1
+    controller.tfinal = 100.0
+    controller.num_output_times = 100
     controller.write_aux_init = True
     controller.outdir = outdir
     controller.write_aux = True
@@ -148,20 +148,11 @@ if __name__ == "__main__":
         eig_methods = [2]
 
     # Display runs
-    resolution = 500
-    for family in [3]:
-        for dry_state in [False]:
-            for method in eig_methods:
-                print "Running family=%s dry=%s eigen=%s resolution=%s" % (family,dry_state,method,resolution)
-                hump(resolution,method,family,dry_state,iplot=False,htmlplot=True)
+    resolution = 80000
+    family = 5
+    dry_state = False
+    method = 2
+    print "Running family=%s dry=%s eigen=%s resolution=%s" % (family,dry_state,method,resolution)
+    hump(resolution,method,family,dry_state,iplot=False,htmlplot=True)
 
-    # Resolutions for tests
-    # resolutions = [64,128,256,512,1024,5000]
-
-    # Run for comparison runs
-    # for family in [3,4]:
-    #     for dry_state in [False,True]:
-    #         for method in eig_methods:
-    #             for resolution in resolutions:
-    #                 print "Running family=%s dry=%s eigen=%s resolution=%s" % (family,dry_state,method,resolution)
-    #                 wave_family(resolution,method,family,dry_state,iplot=False,htmlplot=False)
+    

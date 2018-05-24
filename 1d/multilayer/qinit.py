@@ -58,7 +58,7 @@ def set_eta_to_sea_level(state, eta, single_layer=False):
         state.q[1,:] = np.zeros((state.grid.dimensions[0].num_cells))
     
 
-def set_wave_family_init_condition(state,wave_family,jump_location,epsilon):
+def set_wave_family_init_condition(state,wave_family,jump_location,epsilon, width=0):
     """Set initial condition of a jump in the specified wave family"""
     
     # Set stationary initial state, perturb off of that
@@ -82,19 +82,29 @@ def set_wave_family_init_condition(state,wave_family,jump_location,epsilon):
         elif wave_family == 4:
             alpha = 0.5 * (gamma - 1.0 + np.sqrt((gamma - 1.0)**2 + 4.0 * r * gamma))
             eig_value = np.sqrt(g * state.aux[h_hat_index[0],i] * (1.0 + alpha))
+        elif wave_family == 5:
+            alpha = 0.5 * (gamma - 1.0 + np.sqrt((gamma - 1.0)**2 + 4.0 * r * gamma))
+            eig_value = np.sqrt(g * state.aux[h_hat_index[0],i] * (1.0 + alpha))
         else:
             raise Exception("Unsupported wave family %s requested!" % wave_family)
             
-        if x < jump_location and wave_family >= 3:
+        if x < jump_location and x > jump_location - width and wave_family == 5:
             state.q[0,i] += rho[0] * epsilon
             state.q[1,i] += rho[0] * epsilon * eig_value
-            # state.q[2,i] += rho[1] * epsilon * alpha
-            # state.q[3,i] += rho[1] * epsilon * eig_value * alpha
+            state.q[2,i] += rho[1] * epsilon * alpha
+            state.q[3,i] += rho[1] * epsilon * eig_value * alpha
+        elif x < jump_location and wave_family >= 3 and wave_family != 5:
+            state.q[0,i] += rho[0] * epsilon
+            state.q[1,i] += rho[0] * epsilon * eig_value
+            state.q[2,i] += rho[1] * epsilon * alpha
+            state.q[3,i] += rho[1] * epsilon * eig_value * alpha
         elif x >= jump_location and wave_family < 3:
             state.q[0,i] += rho[0] * epsilon
             state.q[1,i] += rho[0] * epsilon * eig_value
-            # state.q[2,i] += rho[1] * epsilon * alpha
-            # state.q[3,i] += rho[1] * epsilon * eig_value * alpha
+            state.q[2,i] += rho[1] * epsilon * alpha
+            state.q[3,i] += rho[1] * epsilon * eig_value * alpha
+
+        
 
 
 def set_gaussian_init_condition(state,A,location,sigma,internal_layer=True):
