@@ -72,7 +72,7 @@ def hump(num_cells,eigen_method,wave_family,dry_state=True,**kargs):
     # ============================
     num_layers = 2
     
-    x = pyclaw.Dimension(-1000.0, 4000.0, num_cells)
+    x = pyclaw.Dimension(-2000.0, 4000.0, num_cells)
     domain = pyclaw.Domain([x])
     state = pyclaw.State(domain, 2 * num_layers, 3 + num_layers)
     state.aux[ml.aux.kappa_index,:] = 0.0
@@ -148,7 +148,7 @@ if __name__ == "__main__":
         eig_methods = [2]
 
     # Display runs
-    resolution = 80000
+    resolution = 8000
     family = 5
     dry_state = False
     method = 2
