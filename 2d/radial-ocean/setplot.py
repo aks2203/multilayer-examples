@@ -112,8 +112,8 @@ def setplot(plotdata=None, bathy_location=0.15, bathy_angle=0.0,
     ylimits = [20., 60.]
 
     eta = [multilayer_data.eta[0], multilayer_data.eta[1]]
-    top_surface_limits = [eta[0] - 0.3, eta[0] + 0.3]
-    internal_surface_limits = [eta[1] - 0.3, eta[1] + 0.3]
+    top_surface_limits = [eta[0] - 0.03, eta[0] + 0.03]
+    internal_surface_limits = [eta[1] - 0.03, eta[1] + 0.03]
     top_speed_limits = [0.0, 0.1]
     internal_speed_limits = [0.0, 0.03]
    
